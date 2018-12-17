@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Poll</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="wrapper">
+    <h2>Loading...</h2>
+    <div class="votes-container">
+    </div>
+    <input type="submit" class="btn btn-primary btn-lg btn-block" style="display: none" id="submit" value="Submit">
+    <div id="flash" class="alert alert-warning"></div>
+</div>
+<script>
+    let splitted_url = window.location.pathname.split('/');
+    let id = splitted_url[splitted_url.length - 2];
+    
+    $.getJSON("/api/details", {id: id}, data => {
+        if (!data.success) {
+            $("h2").text("Error");
+            return;
+        }
+
+        $("h2").text(data.details.title);
+        let votes = [];
+        data.details.options.forEach((option, index) => {
+            votes.push(`<div class="option form-check"><label class="form-check-label"><input class="form-check-input" type="radio" name="vote" value="${index}" ${index == 0 ? 'checked' : ''}>${option.title}</label></div>`);
+        });
+        $(".votes-container").append(votes.join(""));
+        $("#submit").css("display", "block");
+    });
+
+    $("#submit").click(function () {
+        $(this).prop("disabled", true).val("Submitting...");
+        let selected = parseInt($("input[name='vote']:checked").val());
+        let data = {
+            id: id,
+            option: selected
+        };
+        $.post("/api/vote", JSON.stringify(data), response => {
+            if (response.success === true) {
+                window.location.href = window.location.href + (window.location.href.slice(-1) === "/" ? "results" : "/results");
+            } else {
+                $("#flash").text("Error").show();
+                console.log(response);
+                $("#submit").prop('disabled', false).val("Submit");
+            }
+        }, 'json');
+    });
+</script>
+</body>
+</html>

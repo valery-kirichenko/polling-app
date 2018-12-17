@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Poll</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="wrapper">
+    <h2>Loading...</h2>
+    <div id="chart">
+    </div>
+    <center><a href="/" class="btn btn-outline-primary">Create your own</a></center>
+</div>
+<script>
+    let was_appended = false;
+    let splitted_url = window.location.pathname.split('/');
+    let id = splitted_url[splitted_url.length - 2];
+
+    function update() {
+        $.getJSON("/api/details", {id: id}, data => {
+            if (!data.success) {
+                $("h2").text("Error");
+                return;
+            }
+
+            if (!was_appended) {
+                $("h2").text(data.details.title);
+                document.title = data.details.title + " — Poll";
+                let charts = [];
+                data.details.options.forEach((option, index) => {
+                    let ratio = option.votes/data.details.total * 100;
+                    charts.push(`<div class="option">
+                                 <div class="label">${option.title}</div>
+                                 <div class="progress">
+                                   <div class="progress-bar" role="progressbar" style="width: ${ratio}%;" aria-valuenow="${ratio}" aria-valuemin="0" aria-valuemax="100">Votes: ${option.votes}</div>
+                                 </div></div>`);
+                });
+                $("#chart").append(charts.join(""));
+                was_appended = true;
+            } else {
+                $("#chart div.progress-bar").each(function(index) {
+                    let ratio = data.details.options[index].votes / data.details.total * 100;
+                    $(this).css("width", `${ratio}%`).attr("aria-valuenow", ratio).text("Votes: " + data.details.options[index].votes);
+                });
+            }
+            setTimeout(update, 1000);
+        });
+    }
+    update();
+</script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "api/create.js", "use": "@now/node" },
+    { "src": "api/latest.js", "use": "@now/node" },
+    { "src": "api/details.js", "use": "@now/node" },
+    { "src": "api/vote.js", "use": "@now/node" },
+    { "src": "static/*.html", "use": "@now/static" },
+    { "src": "static/css/*", "use": "@now/static" },
+    { "src": "static/js/*", "use": "@now/static"}
+  ],
+  "routes": [
+    { "src": "/", "dest": "/static/index.html" },
+    { "src": "/(?<id>[0-9a-f]{24})", "dest": "/static/vote.html" },
+    { "src": "/(?<id>[0-9a-f]{24})/results", "dest": "/static/details.html" },
+    { "src": "/(?<id>[0-9a-zA-Z-_]{3,64})", "dest": "/static/vote.html" },
+    { "src": "/(?<id>[0-9a-zA-Z-_]{3,64})/results", "dest": "/static/details.html" },
+    { "src": "/css/style.css", "dest": "/static/css/style.css" },
+    { "src": "/js/index.js", "dest": "/static/js/index.js" },
+    { "src": "/api/create", "dest": "/api/create.js" },
+    { "src": "/api/latest", "dest": "/api/latest.js" },
+    { "src": "/api/details", "dest": "/api/details.js" },
+    { "src": "/api/vote", "dest": "/api/vote.js" }
+  ],
+  "regions": ["bru1"],
+  "alias": ["poll.vkirichenko.name"]
+}
