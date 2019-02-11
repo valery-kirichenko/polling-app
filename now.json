@@ -11,9 +11,9 @@
   ],
   "routes": [
     { "src": "/", "dest": "/static/index.html" },
-    { "src": "/(?<id>[0-9a-f]{24})", "dest": "/static/vote.html" },
+    { "src": "/(?<id>[0-9a-f]{24})/", "dest": "/static/vote.html" },
     { "src": "/(?<id>[0-9a-f]{24})/results", "dest": "/static/details.html" },
-    { "src": "/(?<id>[0-9a-zA-Z-_]{3,64})", "dest": "/static/vote.html" },
+    { "src": "/(?<id>[0-9a-zA-Z-_]{3,64})/", "dest": "/static/vote.html" },
     { "src": "/(?<id>[0-9a-zA-Z-_]{3,64})/results", "dest": "/static/details.html" },
     { "src": "/css/style.css", "dest": "/static/css/style.css" },
     { "src": "/js/index.js", "dest": "/static/js/index.js" },
